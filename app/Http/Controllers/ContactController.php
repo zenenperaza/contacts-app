@@ -21,7 +21,7 @@ class ContactController extends Controller
      */
     public function create()
     {
-        //
+        return view('contacts.create');
     }
 
     /**
@@ -29,13 +29,14 @@ class ContactController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => 'required',
             'email' => ['required','email'],
             'phone_number' => ['required','digits:9'],
             'age' => ['required','numeric','min:1','max:100'],
         ]);
-        return response("Contact created");
+        Contact::create($data);
+        return redirect()->route('home');
     }
 
     /**
@@ -49,9 +50,11 @@ class ContactController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Contact $contact)
+    public function edit(int $contactId)
     {
-        //
+        $contact = Contact::findOrFail($contactId);
+
+        return view('contacts.edit', ['contact' => $contact]);
     }
 
     /**
@@ -59,7 +62,14 @@ class ContactController extends Controller
      */
     public function update(Request $request, Contact $contact)
     {
-        //
+        $data = $request->validate([
+            'name' => 'required',
+            'email' => ['required','email'],
+            'phone_number' => ['required','digits:9'],
+            'age' => ['required','numeric','min:1','max:100'],
+        ]);
+        $contact->update($data);
+        return redirect()->route('home');
     }
 
     /**
@@ -67,6 +77,7 @@ class ContactController extends Controller
      */
     public function destroy(Contact $contact)
     {
-        //
+        $contact->delete();
+        return redirect()->route('home');
     }
 }
