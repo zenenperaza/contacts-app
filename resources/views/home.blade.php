@@ -8,11 +8,11 @@
         <div class="col-md-4 mb-3">
           <div class="card text-center">
             <div class="card-body">
-              <div class="d-flex justify-content-center mb-2">
-                <h1 class="card-title text-capitalize">{{ $contact->name }}</h1>
+              <div class="d-flex justify-content-center mb-2">                
                 <a href="
-                {{-- {{ route('contacts.show', $contact->id) }} --}}
-                ">
+                {{ route('contacts.show', $contact->id) }}
+                " class="text-decoration-none text-black">
+                <h2 class="card-title text-capitalize">{{ $contact->name }}</h2>
                   <img class="profile-picture"
                     src="
                     {{-- {{ Storage::url($contact->profile_picture) }} --}}
@@ -21,7 +21,7 @@
               </div>
               <a class="text-decoration-none text-white"
                 href="
-                {{-- {{ route('contacts.show', $contact->id) }} --}}
+                {{ route('contacts.show', $contact->id) }}
                 ">
                 <h3 class="card-title text-capitalize">{{ $contact->name }}</h3>
               </a>
