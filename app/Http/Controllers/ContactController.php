@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContactRequest;
 use App\Models\Contact;
+use Illuminate\Auth\Access\Response as AccessResponse;
+use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
+use Spatie\FlareClient\Http\Response as FlareClientHttpResponse;
 
 class ContactController extends Controller
 {
+  
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        
         $contacts = auth()->user()->contacts;
         // dd($contacts);
         return view('contacts.index', ['contacts' => $contacts]);
@@ -29,14 +37,9 @@ class ContactController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreContactRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required',
-            'email' => ['required','email'],
-            'phone_number' => ['required','digits:9'],
-            'age' => ['required','numeric','min:1','max:100'],
-        ]);
+        $data = $request->validated();
 
         auth()->user()->contacts()->create($data);
 
@@ -48,30 +51,28 @@ class ContactController extends Controller
      */
     public function show(Contact $contact)
     {
+        $this->authorize('view', $contact);
         return view('contacts.show', ['contact' => $contact]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $contactId)
+    public function edit(Contact $contact)
     {
-        $contact = Contact::findOrFail($contactId);
+        $this->authorize('update', $contact);
 
-        return view('contacts.edit', ['contact' => $contact]);
+        return view('contacts.edit', compact('contact'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Contact $contact)
+    public function update(StoreContactRequest $request, Contact $contact)
     {
-        $data = $request->validate([
-            'name' => 'required',
-            'email' => ['required','email'],
-            'phone_number' => ['required','digits:9'],
-            'age' => ['required','numeric','min:1','max:100'],
-        ]);
+        $this->authorize('update', $contact);
+
+        $data = $request->validated();
         $contact->update($data);
         return redirect()->route('home');
     }
@@ -81,7 +82,10 @@ class ContactController extends Controller
      */
     public function destroy(Contact $contact)
     {
+        $this->authorize('delete', $contact);
+
         $contact->delete();
+
         return redirect()->route('home');
     }
 }
