@@ -14,7 +14,7 @@
                 " class="text-decoration-none text-black">
                 <h2 class="card-title text-capitalize">{{ $contact->name }}</h2>
                   <img class="profile-picture"
-                    src="
+                    src="/img/logo.png
                     {{-- {{ Storage::url($contact->profile_picture) }} --}}
                     ">
                 </a>
