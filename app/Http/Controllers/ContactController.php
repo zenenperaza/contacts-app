@@ -8,6 +8,7 @@ use Illuminate\Auth\Access\Response as AccessResponse;
 use Illuminate\Http\Client\Response as ClientResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
 use Spatie\FlareClient\Http\Response as FlareClientHttpResponse;
@@ -41,12 +42,18 @@ class ContactController extends Controller
     {
         $data = $request->validated();
 
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $data['profile_picture'] = $path;
+        }
+
         $contact = auth()->user()->contacts()->create($data);
 
+        Cache::forget(auth()->id());
 
-        return redirect()->route('home')->with('alert', [
+        return redirect('home')->with('alert', [
             'message' => "Contact $contact->name successfully saved",
-            'type' => "success"
+            'type' => 'success',
         ]);
     }
 
@@ -77,8 +84,20 @@ class ContactController extends Controller
         $this->authorize('update', $contact);
 
         $data = $request->validated();
+
+        if ($request->hasFile('profile_picture')) {
+            $path = $request->file('profile_picture')->store('profiles', 'public');
+            $data['profile_picture'] = $path;
+        }
+
         $contact->update($data);
-        return redirect()->route('home');
+
+        Cache::forget(auth()->id());
+
+        return redirect('home')->with('alert', [
+            'message' => "Contact $contact->name successfully updated",
+            'type' => 'success',
+        ]);
     }
 
     /**
