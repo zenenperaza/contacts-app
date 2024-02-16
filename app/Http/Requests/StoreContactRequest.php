@@ -24,7 +24,7 @@ class StoreContactRequest extends FormRequest
         return [   
                 'name' => 'required',
                 'email' => ['required','email'],
-                'phone_number' => ['required','digits:9'],
+                'phone_number' => ['required'],
                 'age' => ['required','numeric','min:1','max:100'],
                 'profile_picture' => 'image|nullable',
             ];
