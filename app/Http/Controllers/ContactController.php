@@ -22,7 +22,11 @@ class ContactController extends Controller
     public function index()
     {
         
-        $contacts = auth()->user()->contacts;
+        $contacts = auth()
+                    ->user()
+                    ->contacts()
+                    ->orderBy('name', 'desc')
+                    ->paginate(5);
         // dd($contacts);
         return view('contacts.index', ['contacts' => $contacts]);
     }
